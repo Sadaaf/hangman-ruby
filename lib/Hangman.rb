@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'json'
 
 DATA_URL = "https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-no-swears.txt"
 FILE_NAME = "words.txt"
@@ -31,21 +32,15 @@ class Hangman
   def start_game
     for i in @attempts..@total_guesses
       @attempts = i
-      input = get_choice([1,2])
-      if input == 1
-        save_game
-      end
       puts "You have #{@total_guesses - i} guesses left"
-      guess
-      newline
-      break if !@right_guesses.include?('_')
-      newline
       puts "Your previous correct guesses were: #{@right_guesses}"
       newline
       puts "Your previous wrong guesses were: #{@wrong_guesses}"
       newline
-      puts "To save progress input 1"
-      puts "To continue without saving inout 2"
+      guess
+      newline
+      break if !@right_guesses.include?('_')
+      newline
     end
     if @right_guesses.join.casecmp?(@word.join)
       puts "You won!!!!! #{@word.join} is correct"
@@ -66,19 +61,39 @@ class Hangman
     else
         @wrong_guesses << letter
     end
+    puts "To save progress input 1"
+    puts "To continue without saving inout 2"
+    input = get_choice([1,2])
+      if input == 1
+        save_game
+      end
   end
 
   def save_game
     Dir.mkdir("save") unless Dir.exist?("save")
     File.open("./save/#{Time.now.strftime("%H-%M-%S")}.txt", "w") do |save_file|
-      save_file.write("#{@right_guesses}\n#{@wrong_guesses}\n#{@attempts}")
+      save_file.write("#{@right_guesses}\n#{@wrong_guesses}\n#{@attempts+1}\n#{@word}")
     end
     puts "Game Saved"
   end
 
   def load_game
-    if Dir.exist?("save")
-
+    available_saves = 0
+    save_file_names = []
+    if Dir.exist?("save") && !Dir.empty?("save")
+      Dir.entries("save").each_with_index do |entry, index|
+        next if entry == "." || entry == ".."
+        puts "#{index-1}. #{entry}"
+        save_file_names << entry
+        available_saves = index-1
+      end
+      puts "Please select a save file to load"
+      selected = get_choice((1..available_saves).to_a)
+      save = File.readlines("save/#{save_file_names[selected-1]}")
+      @right_guesses = JSON.parse(save[0])
+      @wrong_guesses = JSON.parse(save[1])
+      @attempts = save[2].to_i
+      @word = JSON.parse(save[3])
     else
       puts "You don't have any saved games"
     end
