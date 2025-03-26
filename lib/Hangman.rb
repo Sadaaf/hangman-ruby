@@ -30,7 +30,7 @@ class Hangman
       newline
     end
     if @right_guesses.join.casecmp?(@word.join)
-      puts "You won!"
+      puts "You won!!!!! #{@word.join} is correct"
     else
       puts "GAME OVER! You failed to guess the word"
       puts "The correct word was: #{@word.join}"
