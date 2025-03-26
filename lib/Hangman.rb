@@ -26,7 +26,12 @@ class Hangman
       input = gets.chomp.to_i 
     end
     load_game if input == 1
-    save_game if input == 2
+    start_game if input == 2
+  end
+
+  private
+
+  def start_game
     for i in 1..@total_guesses
       puts "You have #{@total_guesses - i + 1} guesses left"
       guess
@@ -45,8 +50,6 @@ class Hangman
       puts "The correct word was: #{@word.join}"
     end
   end
-
-  private
 
   def guess
     puts "Guess a letter"
