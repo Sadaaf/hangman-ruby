@@ -3,5 +3,5 @@
 To play the game, simply run the command
 
 ```bash
-    ruby lib/Hangman.rb
+ruby lib/Hangman.rb
 ```
