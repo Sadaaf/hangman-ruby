@@ -11,7 +11,7 @@ end
 
 class Hangman
   def initialize
-    @word = File.readlines(FILE_NAME).map(&:chomp).select{|word| word.length.between?(5,12)}.sample().split("")
+    @word = File.readlines(FILE_NAME).map(&:chomp).select{|word| word.length.between?(5,12)}.sample().downcase().split("")
     @total_guesses = 12
     @wrong_guesses = []
     @right_guesses = Array.new(@word.length, '_')
@@ -41,7 +41,7 @@ class Hangman
 
   def guess
     puts "Guess a letter"
-    letter = gets.chomp
+    letter = gets.chomp.downcase
     indexes = @word.each_index.select { |index| @word[index] == letter}
     if indexes.length > 0
       indexes.each do |index|
