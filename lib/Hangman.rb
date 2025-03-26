@@ -15,25 +15,27 @@ class Hangman
     @total_guesses = 12
     @wrong_guesses = []
     @right_guesses = Array.new(@word.length, '_')
+    @attempts = 0
   end
 
   def play
     puts "Input 1 to load game"
     puts "Input 2 to start a new game"
-    input = gets.chomp.to_i 
-    until input >= 1 && input <= 2
-      puts "Invalid input! Please enter 1 or 2"
-      input = gets.chomp.to_i 
-    end
+    input = get_choice([1,2])
     load_game if input == 1
-    start_game if input == 2
+    start_game
   end
 
   private
 
   def start_game
-    for i in 1..@total_guesses
-      puts "You have #{@total_guesses - i + 1} guesses left"
+    for i in @attempts..@total_guesses
+      @attempts = i
+      input = get_choice([1,2])
+      if input == 1
+        save_game
+      end
+      puts "You have #{@total_guesses - i} guesses left"
       guess
       newline
       break if !@right_guesses.include?('_')
@@ -42,6 +44,8 @@ class Hangman
       newline
       puts "Your previous wrong guesses were: #{@wrong_guesses}"
       newline
+      puts "To save progress input 1"
+      puts "To continue without saving inout 2"
     end
     if @right_guesses.join.casecmp?(@word.join)
       puts "You won!!!!! #{@word.join} is correct"
@@ -65,11 +69,28 @@ class Hangman
   end
 
   def save_game
+    Dir.mkdir("save") unless Dir.exist?("save")
+    File.open("./save/#{Time.now.strftime("%H-%M-%S")}.txt", "w") do |save_file|
+      save_file.write("#{@right_guesses}\n#{@wrong_guesses}\n#{@attempts}")
+    end
     puts "Game Saved"
   end
 
   def load_game
-    puts "Game Loaded"
+    if Dir.exist?("save")
+
+    else
+      puts "You don't have any saved games"
+    end
+  end
+
+  def get_choice choices
+    input = gets.chomp.to_i 
+    until choices.include?(input)
+      puts "Invalid input! please input #{choices.join(", ")}"
+      input = gets.chomp.to_i 
+    end
+    return input
   end
 
   def newline
