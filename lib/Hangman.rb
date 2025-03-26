@@ -18,6 +18,15 @@ class Hangman
   end
 
   def play
+    puts "Input 1 to load game"
+    puts "Input 2 to start a new game"
+    input = gets.chomp.to_i 
+    until input >= 1 && input <= 2
+      puts "Invalid input! Please enter 1 or 2"
+      input = gets.chomp.to_i 
+    end
+    load_game if input == 1
+    save_game if input == 2
     for i in 1..@total_guesses
       puts "You have #{@total_guesses - i + 1} guesses left"
       guess
@@ -50,6 +59,14 @@ class Hangman
     else
         @wrong_guesses << letter
     end
+  end
+
+  def save_game
+    puts "Game Saved"
+  end
+
+  def load_game
+    puts "Game Loaded"
   end
 
   def newline
